@@ -1,0 +1,54 @@
+TTreeAu (tta) for Linux 3.01  --  in the style of XTreeGold
+Copyright (c) 1989-1993, 2026 Paul Khoury
+
+BUILD
+  Needs gcc and the ncurses development headers (woody: libncurses5-dev).
+      make
+      make install          (as root; puts tta in /usr/local/bin)
+  Written in plain C89, so gcc 2.95 / glibc 2.2 / ncurses 5.2 are fine.
+
+RUN
+  tta [directory]           starts in the current directory if none is given
+
+  The whole disk is read at startup, with a progress bar, like XTreeGold.
+  ESC skips the rest; those directories are read when you move onto them.
+  /proc, /sys and other virtual or network filesystems are never read
+  automatically.  Move onto them, or press L, to read them.
+  tta -l starts without reading everything (or set  log = lazy  in ~/.ttarc).
+
+  L (Log) re-reads the highlighted directory and everything already read
+  under it.  Use it after mounting something under /mnt, or after files
+  were created outside TTreeAu.
+
+KEYS
+  F sets the filespec (*.c *.h, or * -*.o to exclude).  Alt+F cycles the
+  file display: names / + permissions / + size, permissions, date and time.
+  F1 shows all the keys, and F10 opens a command menu for the current window.
+  In the file window, Shift+letter applies a command to every tagged file
+  (Ctrl+letter works too, except Move, because Ctrl+M is the Enter key).
+
+QUIT INTO A DIRECTORY (Alt+Q)
+  A program can't change its parent shell's directory, so add this to
+  ~/.bashrc:
+      tta() { TTA_CDFILE=/tmp/tta.$$ command tta "$@";
+              [ -s /tmp/tta.$$ ] && cd "$(cat /tmp/tta.$$)"; rm -f /tmp/tta.$$; }
+
+APPLICATION MENU (F9)
+  Stored in ~/.ttamenu, which is created with examples on first use.
+  Each line is "Label | command".  %f = highlighted file, %n = its name,
+  %d = directory.  These are shell-quoted automatically.
+
+TERMINALS
+  Linux console, xterm and PuTTY all work, and the screen redraws on resize.
+  The minimum size is 60x16.
+  PuTTY: if the boxes come out as letters (lqqqk), set Window > Translation >
+  "Enable VT100 line drawing even in UTF-8 mode", or run with
+  NCURSES_NO_UTF8_ACS=1.
+  The version/copyright line is on Alt+V or F12.  Terminals can't detect
+  Ctrl+Alt held down by itself, so the original Ctrl+Alt trick can't work.
+
+CONFIGURATION (~/.ttarc, created on first run)
+  clock = 24      24 hour time (the default)
+  clock = 12      am/pm
+  log = all       read the whole disk at startup (the default)
+  log = lazy      read directories as you move onto them
